@@ -23,5 +23,7 @@
     <string name="action_remove">Uninstall Xposed</string>
     <string name="summary_thanks">Thanks --Team Vanir</string>
     <string name="action_accept_consequences">Ignore warning</string>
-
+    <string name="title_activity_indecent_tester">IndecentTester</string>
+    <string name="title_activity_indecent_xposure_test">Indecent Xposure Tester</string>
+    <string name="title_activity_indecent">IndecentActivity</string>
 </resources>

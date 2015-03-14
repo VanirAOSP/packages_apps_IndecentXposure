@@ -37,7 +37,7 @@ public class IndecentTester extends Activity {private static final String TAG = 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_indecent_tester);
 
-        start = (RadioButton) findViewById(R.id.runService);
+        start = (RadioButton) findViewById(R.id.run);
         _radioGroup = (RadioGroup)start.getParent();
         _radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override

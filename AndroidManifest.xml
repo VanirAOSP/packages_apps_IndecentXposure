@@ -29,6 +29,15 @@
                 <action android:name="co.vanir.indecentxposure.IGNORE_LIKELY_FUNK" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".IndecentTester"
+            android:label="@string/title_activity_indecent_xposure_test" >
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
