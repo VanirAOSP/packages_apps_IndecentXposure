@@ -35,20 +35,19 @@ import android.util.Log;
 public class IndecentXposure extends BroadcastReceiver {
 
     private static IndecentXposure _instance;
-    private static Object padlock = new Object();
     public IndecentXposure()
     {
         super();
         if (_instance == null)
-	    	synchronized(IndecentXposure.class) {
-	    		if (_instance == null)
+        	synchronized(IndecentXposure.class) {
+        		if (_instance == null)
 	    			_instance = this;
 	    	}
     }
     static IndecentXposure getInstance() {
     	synchronized(IndecentXposure.class) {
-    		if (_instance != null)
-    			return _instance;
+            if (_instance != null)
+                return _instance;
     	}
     	//there's a bit of an obvious mutual exclusion hole here,
     	//	but I'm hoping this is sufficient to make sure getInstance uses any
