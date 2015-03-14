@@ -30,12 +30,12 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Stop watching (un)installs"
+            android:text="@string/force_stop"
             android:id="@+id/stop" />
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Watch (un)installs"
+            android:text="@string/force_start"
             android:id="@+id/run"
             android:layout_below="@+id/stop" />
     </RadioGroup>
@@ -53,7 +53,7 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="FIRE"
+            android:text="@string/manual_show_notification"
             android:id="@+id/trigger"
             android:layout_below="@+id/radioGroup"
             android:layout_alignParentLeft="true"
@@ -63,7 +63,7 @@
         <Button
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="WATER"
+            android:text="@string/manual_hide_notification"
             android:id="@+id/suppress"
             android:layout_weight="0.5" />
     </LinearLayout>

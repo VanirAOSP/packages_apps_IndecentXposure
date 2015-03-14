@@ -26,4 +26,8 @@
     <string name="title_activity_indecent_tester">IndecentTester</string>
     <string name="title_activity_indecent_xposure_test">Indecent Xposure Tester</string>
     <string name="title_activity_indecent">IndecentActivity</string>
+    <string name="manual_show_notification">FIRE</string>
+    <string name="manual_hide_notification">WATER</string>
+    <string name="force_start">Watch (un)installs</string>
+    <string name="force_stop">Stop watching (un)installs</string>
 </resources>
