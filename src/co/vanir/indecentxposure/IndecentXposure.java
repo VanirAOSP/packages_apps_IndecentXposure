@@ -43,7 +43,9 @@ public class IndecentXposure extends BroadcastReceiver {
     public IndecentXposure()
     {
         super();
-        _instance = this;
+        if (_instance != null) {
+            Log.e(TAG, "THERE ARE MORE THAN ONE INSTANCES OF IndecentXposure!");
+        }
     }
     static synchronized IndecentXposure getInstance() {
         if (_instance == null) {
@@ -58,36 +60,50 @@ public class IndecentXposure extends BroadcastReceiver {
     //notification identifier
     private static final String NOTIFICATION_TAG = "IndecentXposureNotification";
 
+    private boolean _state;
+    private Object _padlock = new Object();
+
     void start(Context context) {
-        //become a real boy!
+        synchronized(_padlock) {
+            if (_state) {
+                Log.e(TAG, "IndecentXposure ALREADY receiving package changes");
+            } else {
+                _state = true;
+                IntentFilter packageAddOrRemovedFilter = new IntentFilter();
+                packageAddOrRemovedFilter.addAction("android.intent.action.PACKAGE_ADDED");
+                packageAddOrRemovedFilter.addAction("android.intent.action.PACKAGE_REMOVED");
+                packageAddOrRemovedFilter.addDataScheme("package");
+                context.registerReceiver(this, packageAddOrRemovedFilter);
 
-        IntentFilter packageAddOrRemovedFilter = new IntentFilter();
-        packageAddOrRemovedFilter.addAction("android.intent.action.PACKAGE_ADDED");
-        packageAddOrRemovedFilter.addAction("android.intent.action.PACKAGE_REMOVED");
-        packageAddOrRemovedFilter.addDataScheme("package");
-        context.registerReceiver(this, packageAddOrRemovedFilter);
+                //if we're here, and the user hasn't yet explicitly acknowledged the risk of their choice
+                //  GET ALL UP IN THEIR GRILL.
+                boolean userDoesntWantTheirPhoneToWork = SerialOffender.hasXposedInstaller(context);
+                if (!SerialOffender.getIgnoredState(context) && userDoesntWantTheirPhoneToWork) {
 
-        //if we're here, and the user hasn't yet explicitly acknowledged the risk of their choice
-        //  GET ALL UP IN THEIR GRILL.
-        boolean userDoesntWantTheirPhoneToWork = SerialOffender.hasXposedInstaller(context);
-        if (!SerialOffender.getIgnoredState(context) && userDoesntWantTheirPhoneToWork) {
-
-            //if the user hasn't acknowledged they're probably causing their own bugs by
-            //  having xposed installed, and the installer is present, then pop up a fresh
-            //  reminder
-            IndecentXposure.notify(context, "XposedInstaller detected");
+                    //if the user hasn't acknowledged they're probably causing their own bugs by
+                    //  having xposed installed, and the installer is present, then pop up a fresh
+                    //  reminder
+                    IndecentXposure.notify(context, "XposedInstaller detected");
+                }
+            }
         }
     }
 
     void end(Context context) {
-        //this is only called by the tester activity, if the tester is enabled in the overlay
-
-        context.unregisterReceiver(this);
+        synchronized(_padlock) {
+            //this is only called by the tester activity, if the tester is enabled in the overlay
+            if (!_state) {
+                Log.e(TAG, "ALREADY DISABLED");
+            } else {
+                context.unregisterReceiver(this);
+            }
+        }
     }
 
     // handle BOOT_COMPLETE, and ignore button
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.v(TAG, "onReceive("+intent.getAction()+")");
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
 
             start(context);
