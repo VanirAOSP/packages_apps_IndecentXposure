@@ -18,35 +18,20 @@ package co.vanir.indecentxposure;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 
-public class IndecentTester extends Activity {private static final String TAG = "IndecentExposureTest";
-    RadioButton start;
-    RadioGroup _radioGroup;
-
-
-
+public class IndecentTester extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_indecent_tester);
 
-        start = (RadioButton) findViewById(R.id.run);
-        _radioGroup = (RadioGroup)start.getParent();
-        _radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        ((Button) findViewById(R.id.checknow)).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                if (i == start.getId()) {
-                    IndecentXposure.getInstance().start(getApplication());
-                } else {
-                    IndecentXposure.getInstance().end(getApplication());
-                }
+            public void onClick(View view) {
+                IndecentXposure.getInstance().start(getApplication());
             }
         });
         ((Button)findViewById(R.id.trigger)).setOnClickListener(new View.OnClickListener() {

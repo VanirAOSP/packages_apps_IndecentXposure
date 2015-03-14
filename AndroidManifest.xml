@@ -32,6 +32,11 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="co.vanir.indecentxposure.IGNORE_LIKELY_FUNK" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED" />
+                <action android:name="android.intent.action.PACKAGE_ADDED" />    
+                <data android:scheme="package" />
+            </intent-filter>
         </receiver>
 
         <activity

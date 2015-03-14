@@ -23,10 +23,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -34,24 +31,29 @@ import android.support.v4.app.NotificationCompat;
 
 import android.util.Log;
 
-import java.util.concurrent.RunnableFuture;
-
 
 public class IndecentXposure extends BroadcastReceiver {
 
     private static IndecentXposure _instance;
+    private static Object padlock = new Object();
     public IndecentXposure()
     {
         super();
-        if (_instance != null) {
-            Log.e(TAG, "THERE ARE MORE THAN ONE INSTANCES OF IndecentXposure!");
-        }
+        if (_instance == null)
+	    	synchronized(IndecentXposure.class) {
+	    		if (_instance == null)
+	    			_instance = this;
+	    	}
     }
-    static synchronized IndecentXposure getInstance() {
-        if (_instance == null) {
-            _instance = new IndecentXposure();
-        }
-        return _instance;
+    static IndecentXposure getInstance() {
+    	synchronized(IndecentXposure.class) {
+    		if (_instance != null)
+    			return _instance;
+    	}
+    	//there's a bit of an obvious mutual exclusion hole here,
+    	//	but I'm hoping this is sufficient to make sure getInstance uses any
+    	//	instance lit up to receive boot completed
+    	return new IndecentXposure();
     }
 
     //teh loggingz
@@ -60,43 +62,16 @@ public class IndecentXposure extends BroadcastReceiver {
     //notification identifier
     private static final String NOTIFICATION_TAG = "IndecentXposureNotification";
 
-    private boolean _state;
-    private Object _padlock = new Object();
-
     void start(Context context) {
-        synchronized(_padlock) {
-            if (_state) {
-                Log.e(TAG, "IndecentXposure ALREADY receiving package changes");
-            } else {
-                _state = true;
-                IntentFilter packageAddOrRemovedFilter = new IntentFilter();
-                packageAddOrRemovedFilter.addAction("android.intent.action.PACKAGE_ADDED");
-                packageAddOrRemovedFilter.addAction("android.intent.action.PACKAGE_REMOVED");
-                packageAddOrRemovedFilter.addDataScheme("package");
-                context.registerReceiver(this, packageAddOrRemovedFilter);
+        //if we're here, and the user hasn't yet explicitly acknowledged the risk of their choice
+        //  GET ALL UP IN THEIR GRILL.
+        boolean userDoesntWantTheirPhoneToWork = SerialOffender.hasXposedInstaller(context);
+        if (!SerialOffender.getIgnoredState(context) && userDoesntWantTheirPhoneToWork) {
 
-                //if we're here, and the user hasn't yet explicitly acknowledged the risk of their choice
-                //  GET ALL UP IN THEIR GRILL.
-                boolean userDoesntWantTheirPhoneToWork = SerialOffender.hasXposedInstaller(context);
-                if (!SerialOffender.getIgnoredState(context) && userDoesntWantTheirPhoneToWork) {
-
-                    //if the user hasn't acknowledged they're probably causing their own bugs by
-                    //  having xposed installed, and the installer is present, then pop up a fresh
-                    //  reminder
-                    IndecentXposure.notify(context, "XposedInstaller detected");
-                }
-            }
-        }
-    }
-
-    void end(Context context) {
-        synchronized(_padlock) {
-            //this is only called by the tester activity, if the tester is enabled in the overlay
-            if (!_state) {
-                Log.e(TAG, "ALREADY DISABLED");
-            } else {
-                context.unregisterReceiver(this);
-            }
+            //if the user hasn't acknowledged they're probably causing their own bugs by
+            //  having xposed installed, and the installer is present, then pop up a fresh
+            //  reminder
+            IndecentXposure.notify(context, "XposedInstaller detected");
         }
     }
 
@@ -108,7 +83,7 @@ public class IndecentXposure extends BroadcastReceiver {
 
             start(context);
 
-        } else if (intent.getAction().equals(intent.ACTION_PACKAGE_ADDED) || intent.getAction().equals(intent.ACTION_PACKAGE_REMOVED)) {
+        } else if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED) || intent.getAction().equals(Intent.ACTION_PACKAGE_REMOVED)) {
             //handle package install/uninstall all smart-like
 
             if (intent.getData() == null ||
@@ -126,7 +101,7 @@ public class IndecentXposure extends BroadcastReceiver {
                 return;
             }
 
-            if (intent.getAction().equals(intent.ACTION_PACKAGE_ADDED)) {
+            if (intent.getAction().equals(Intent.ACTION_PACKAGE_ADDED)) {
 
                 //sound the alarm
                 IndecentXposure.notify(context, "package installed -- and something about the consequences of that");

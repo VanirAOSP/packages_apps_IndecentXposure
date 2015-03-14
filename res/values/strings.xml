@@ -28,6 +28,5 @@
     <string name="title_activity_indecent">IndecentActivity</string>
     <string name="manual_show_notification">FIRE</string>
     <string name="manual_hide_notification">WATER</string>
-    <string name="force_start">Watch (un)installs</string>
-    <string name="force_stop">Stop watching (un)installs</string>
+    <string name="checknow_title">Check now! (should be autostarting... wtf, mate)</string>
 </resources>
